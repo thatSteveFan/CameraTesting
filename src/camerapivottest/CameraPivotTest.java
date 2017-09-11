@@ -19,7 +19,6 @@ import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
@@ -39,20 +38,37 @@ import javafx.stage.Stage;
 public class CameraPivotTest extends Application {
 
     DoubleProperty distance = new SimpleDoubleProperty(700);
+    BooleanProperty aDown = new SimpleBooleanProperty(false);
+    BooleanProperty leftDown = new SimpleBooleanProperty(false);
+    BooleanProperty movingLeft = new SimpleBooleanProperty();
+    {
+        movingLeft.bind(leftDown.or(aDown));
+    }
+    
+    BooleanProperty wDown = new SimpleBooleanProperty(false);
+    BooleanProperty upDown = new SimpleBooleanProperty(false);
+    BooleanProperty movingUp = new SimpleBooleanProperty();
+    {
+        movingUp.bind(wDown.or(upDown));
+    }
+    
+    
+    
+    
 
     @Override
     public void start(Stage primaryStage) {
 
         Group root = new Group();
 
-        Pane obviousRedPane = new Pane();
-        obviousRedPane.setPrefWidth(100);
-        obviousRedPane.setPrefHeight(100);
-        obviousRedPane.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-        obviousRedPane.setTranslateX(300);
-        obviousRedPane.setTranslateY(100);
-        obviousRedPane.setTranslateZ(00);
-        root.getChildren().add(obviousRedPane);
+        Pane sprite = new Pane();
+        sprite.setPrefWidth(100);
+        sprite.setPrefHeight(100);
+        sprite.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+        sprite.setTranslateX(300);
+        sprite.setTranslateY(100);
+        sprite.setTranslateZ(00);
+        root.getChildren().add(sprite);
 
         GridPane grid = grid(10);
         grid.setGridLinesVisible(true);
@@ -72,15 +88,15 @@ public class CameraPivotTest extends Application {
         root.getChildren().add(grid3);
 
         DoubleProperty redCenterX = new SimpleDoubleProperty();
-        redCenterX.bind(obviousRedPane.translateXProperty().add(obviousRedPane.widthProperty().divide(2)));
+        redCenterX.bind(sprite.translateXProperty().add(sprite.widthProperty().divide(2)));
 
         DoubleProperty redCenterY = new SimpleDoubleProperty();
-        redCenterY.bind(obviousRedPane.translateYProperty().add(obviousRedPane.heightProperty().divide(2)));
+        redCenterY.bind(sprite.translateYProperty().add(sprite.heightProperty().divide(2)));
 
         Camera c = new PerspectiveCamera(true);
         c.translateXProperty().bind(redCenterX);
         c.translateYProperty().bind(redCenterY);
-        c.translateZProperty().bind(obviousRedPane.translateZProperty());
+        c.translateZProperty().bind(sprite.translateZProperty());
 
         c.setFarClip(3000);
 
@@ -102,21 +118,66 @@ public class CameraPivotTest extends Application {
             @Override
             public void handle(long now) {
                 angle.set(angle.get() + 0.4);
+                if(movingLeft.get())
+                {
+                    sprite.setTranslateX(sprite.getTranslateX() - 1);
+                }
+                if(movingUp.get())
+                {
+                    sprite.setTranslateY(sprite.getTranslateY() - 1);
+                }
             }
         };
+        
+        
+        
         BooleanProperty running = new SimpleBooleanProperty(false);
         scene.onKeyPressedProperty().set(e
                 -> {
-            if (e.getCode() == KeyCode.SPACE) {
-                if (running.get()) {
-                    t.stop();
-                    running.set(false);
-                } else {
-                    t.start();
-                    running.set(true);
-                }
+            switch (e.getCode()) {
+                case SPACE:
+                    if (running.get()) {
+                        t.stop();
+                        running.set(false);
+                    } else {
+                        t.start();
+                        running.set(true);
+                    }
+                    break;
+                case A:
+                    aDown.setValue(true);
+                    break;
+                case LEFT:
+                    leftDown.setValue(true);
+                    break;
+                case W:
+                    wDown.set(true);
+                case UP:
+                    upDown.set(true);
+                    
+                default:
+                    break;
+            }
+
+        });
+        scene.onKeyReleasedProperty().set(e
+                -> {
+            switch (e.getCode()) {
+                case A:
+                    aDown.setValue(false);
+                    break;
+                case LEFT:
+                    leftDown.setValue(false);
+                    break;
+                    case W:
+                    wDown.set(false);
+                case UP:
+                    upDown.set(false);
+                default:
+                    break;
             }
         });
+
         t.start();
 
         scene.setCamera(c);
@@ -154,9 +215,6 @@ public class CameraPivotTest extends Application {
         return temp;
     }
 }
-
-
-
 
 
 
