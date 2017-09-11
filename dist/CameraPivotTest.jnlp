@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="CameraPivotTest.jnlp">
+  <information>
+    <title>CameraPivotTest</title>
+    <vendor>pramukh</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="CameraPivotTest.jar" size="4831" download="eager" />
+    <jar href="lib\advanced-bindings-0.4.0.jar" size="20151" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="CameraPivotTest" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="camerapivottest.CameraPivotTest"  name="CameraPivotTest" />
+  <update check="always"/>
+</jnlp>
